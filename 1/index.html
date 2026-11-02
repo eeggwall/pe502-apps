@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Castle Foundry · PE502</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="frame">
+
+<header class="head">
+  <div class="plate">
+    <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+    <div class="seal" aria-hidden="true"><svg viewBox="0 0 88 60"><g fill="#6FA9CB" stroke="#2E5F7D" stroke-width="2"><rect x="2" y="44" width="84" height="14"/><rect x="16" y="30" width="56" height="14"/><rect x="16" y="16" width="14" height="14"/><rect x="44" y="16" width="14" height="14"/><rect x="44" y="2" width="14" height="14"/></g></svg></div>
+    <div>
+      <h1 class="plate-main">PE502</h1>
+      <div class="plate-sub">Castle polyominoes, after Project Euler problem 502</div>
+    </div>
+    <span class="led cyan idle" id="masterLed" title="Master lamp"></span>
+  </div>
+  <div class="titleblock" aria-label="Title block">
+    <div><span>SHEET</span><b>01 OF 01</b></div>
+    <div><span>REV.</span><b>B</b></div>
+    <div><span>DRAWN</span><b>2026-10-24</b></div>
+    <div><span>REPORT</span><b>PE502-1</b></div>
+  </div>
+</header>
+
+<p class="brief">A castle of width w and height h is a row of w columns of unit cells on a common base, with column heights c = (c<sub>1</sub>, …, c<sub>w</sub>), each between 1 and h, and at least one column of height h. A block is a maximal horizontal run of filled cells in one row, and a castle may have an even or an odd number of blocks. This console is a companion to technical report PE502-1, <i>Castle Polyominoes and How to Count Them</i>, which counts all castles, A(w, h), and the even-block castles, A<sup>e</sup>(w, h). A<sup>e</sup>(w, h) is the F(w, h) of <a href="https://projecteuler.net/problem=502">Project Euler Problem 502</a>, whose castles are the even-block castles.</p>
+
+<section class="ann" id="ann" aria-label="Annunciator"></section>
+
+<!-- ============ PE502-1 DESIGNER ============ -->
+<section class="bay" id="bay-designer">
+  <div class="bay-head"><span class="bay-no">PE502-1</span><h2 class="bay-title">Designer</h2><span class="bay-sub">Loading Bay 001</span></div>
+  <div class="bay-body">
+    <div class="mod">
+      <div class="lab"><span class="name"><span class="led amber" id="d-led"></span>Castle field</span><span class="sub" id="d-fieldsub"></span></div>
+      <div class="well field-well" id="d-wrap"><canvas id="designer-canvas" tabindex="0" aria-label="Castle field. Click above a tower to raise it, on a tower to lower it, or drag to paint. With the field focused, left and right arrows pick a column and up and down raise or lower it."></canvas></div>
+      <div class="stamp" id="d-stamp"></div>
+      <p class="legend">Click above a tower to raise it, on a tower to lower it; drag to paint. Focus the field for <kbd>←</kbd><kbd>→</kbd> column, <kbd>↑</kbd><kbd>↓</kbd> raise / lower. <span class="a">Amber line: the ceiling h.</span> <span class="r">Red square: the cell under the pointer</span>, its column and row above right. Each block is one brick, as in PE502-1 Figure 1; <kbd>B</kbd> shows the cells. The address bar keeps the castle, so a link reopens it.</p>
+    </div>
+
+    <div class="g2 wide-left">
+      <div class="col">
+        <div class="mod">
+          <div class="lab"><span>Dimensions</span><span class="sub">operator settings</span></div>
+          <div class="dim">
+            <div class="lab"><span>Width w</span><span class="sub">1 – 200 · columns</span></div>
+            <div class="dim-row">
+              <div class="rail-wrap" id="w-rail" role="slider" tabindex="0" aria-label="Width w" aria-valuemin="1" aria-valuemax="200">
+                <div class="rail"></div><div class="zones"></div><div class="thumb"></div>
+                <span class="endcap" style="left:0">1</span><span class="endcap" style="right:0">200</span>
+              </div>
+              <div class="stepper"><span class="tag">w</span><button data-step="-1" aria-label="Decrease width">−</button><input id="w-num" type="number" min="1" max="200" inputmode="numeric" aria-label="Width w" /><button data-step="1" aria-label="Increase width">+</button></div>
+            </div>
+          </div>
+          <div class="dim">
+            <div class="lab"><span>Height h</span><span class="sub">1 – 100 · rows · the ceiling of the field</span></div>
+            <div class="dim-row">
+              <div class="rail-wrap" id="h-rail" role="slider" tabindex="0" aria-label="Height h" aria-valuemin="1" aria-valuemax="100">
+                <div class="rail"></div><div class="zones"></div><div class="thumb"></div>
+                <span class="endcap" style="left:0">1</span><span class="endcap" style="right:0">100</span>
+              </div>
+              <div class="stepper"><span class="tag">h</span><button data-step="-1" aria-label="Decrease height">−</button><input id="h-num" type="number" min="1" max="100" inputmode="numeric" aria-label="Height h" /><button data-step="1" aria-label="Increase height">+</button></div>
+            </div>
+          </div>
+          <p class="legend">Marked on each rail for the other dial's setting: hatched where A<sup>e</sup>(w, h) = 0, that is, where no castle has an even number of blocks. Rails take <kbd>←</kbd><kbd>→</kbd> ±1, <kbd>PgUp</kbd><kbd>PgDn</kbd> ±10, <kbd>Home</kbd><kbd>End</kbd>.</p>
+        </div>
+
+        <div class="mod">
+          <div class="lab"><span>Generators</span><span class="sub">every castle equally likely</span></div>
+          <div class="ctl">
+            <span class="klab">Build</span>
+            <div class="btn-row">
+              <button class="btn" data-gen="random">Random</button>
+              <button class="btn" data-gen="symmetric">Symmetric</button>
+              <button class="btn" data-gen="tallest">Tallest</button>
+              <button class="btn" data-gen="widest">Widest</button>
+              <button class="btn" data-gen="clear">Clear</button>
+            </div>
+          </div>
+          <p class="legend">Random draws a new castle of width w and height h on each press; Symmetric draws a mirror-image one.</p>
+        </div>
+
+        <div class="printer">
+          <div class="lp-out" id="d-out" tabindex="0" aria-label="Line printer output">
+            <div class="printout"><div class="sheet" id="d-sheet"></div></div>
+          </div>
+          <div class="lp-body">
+            <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+            <span class="badge">Line printer · type LP-502</span>
+            <span class="lp-lamp"><i class="led cyan idle" id="lp-led"></i>On line</span>
+            <button class="btn" id="feedBtn">Line feed<kbd>L</kbd></button>
+          </div>
+        </div>
+      </div>
+      <div class="col" id="d-readout">
+        <div class="mod">
+          <div class="lab"><span>Blocks</span><span class="sub">maximal runs of filled cells in one row</span></div>
+          <div class="readrow"><span class="big" data-f="blocks">—</span><span class="pill" data-f="parity">—</span></div>
+          <div class="theory" data-f="blocks-note"></div>
+        </div>
+        <div class="mod">
+          <div class="lab"><span>Castle counts</span><span class="sub" data-f="counts-sub"></span></div>
+          <div class="theory lead">The castles of this width w and height h, of which this castle is one. The lamps mark the counts it is part of.</div>
+          <div class="counts">
+            <div class="count"><i class="lampdot am" data-f="all-lamp"></i><span class="cname">A(<span data-f="all-wh"></span>)</span><span class="num" data-f="all-num">—</span><span class="cdesc">All castles: h<sup>w</sup> − (h − 1)<sup>w</sup>, the skylines with every c<sub>i</sub> between 1 and h, less those that never reach h.</span></div>
+            <div class="count"><i class="lampdot am" data-f="even-lamp"></i><span class="cname">A<sup>e</sup>(<span data-f="even-wh"></span>)</span><span class="num" data-f="even-num">—</span><span class="cdesc">Even-block castles, the castles Project Euler Problem 502 counts.</span></div>
+            <div class="count"><i class="lampdot am" data-f="odd-lamp"></i><span class="cname">A<sup>o</sup>(<span data-f="odd-wh"></span>)</span><span class="num" data-f="odd-num">—</span><span class="cdesc">Odd-block castles: A(w, h) − A<sup>e</sup>(w, h).</span></div>
+          </div>
+        </div>
+        <div class="mod">
+          <div class="lab"><span>Fact sheet</span><span class="sub" data-f="nick"></span></div>
+          <div class="kv three">
+            <div><div class="k">Size w × h</div><div class="v" data-f="size">—</div></div>
+            <div><div class="k">Degree</div><div class="v" data-f="degree">—</div></div>
+            <div><div class="k">Valleys</div><div class="v" data-f="valleys">—</div></div>
+          </div>
+          <div class="lamps">
+            <span><i class="lampdot" data-f="symmetric"></i>Symmetric</span>
+            <span><i class="lampdot" data-f="convex"></i>Convex</span>
+            <span><i class="lampdot" data-f="concave"></i>Concave</span>
+          </div>
+        </div>
+        <div class="mod modes-panel">
+          <div class="lab"><span>Printout</span><span class="sub">one representation at a time</span></div>
+          <div class="modes" id="modes" role="radiogroup" aria-label="Printout representation"></div>
+          <p class="legend"><kbd>P</kbd> steps to the next representation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="lab"><span class="hd"><span class="bay-no">PE502-1</span><h3 class="bay-title">Mimic diagram</h3><span class="bay-sub">Loading Bay 001</span></span><span class="sub" id="mv-sub"></span></div>
+      <div class="mimic" id="mimic">
+        <div class="mv-grid">
+        <div class="mv-step c1"><b>1 · Count and sign</b><span>P(k, w) adds +1 for each even-block tower of height at most k and −1 for each odd one, eq. (4.2).</span></div>
+        <div class="mv-step c2"><b>2 · Subtract</b><span>What reaches h: the castles, eq. (3.1), and the signs of their towers, which have height exactly h − 1.</span></div>
+        <div class="mv-step c3"><b>3 · Combine</b><span>An even-block castle's towers have sign −1: it counts 1 − (−1) = 2 above, 1 + (−1) = 0 below. Odd-block, the reverse.</span></div>
+        <div class="mv-step c4"><b>4 · Halve</b><span>Half of each: eq. (4.4) for the even-block castles, and the same with the signs flipped for the odd-block ones.</span></div>
+        <div class="mv-box c1 r1"><div class="mv-t"><span>Skylines, height at most h</span><i class="lampdot am" data-mv="l-hw"></i></div><div class="mv-f">h<sup>w</sup></div><div class="mv-f mv-sub" data-mv="hw-sub"></div><div class="mv-n" data-mv="hw">—</div></div>
+        <div class="mv-box c1 r2"><div class="mv-t"><span>Skylines, height at most h − 1</span><i class="lampdot am" data-mv="l-h1w"></i></div><div class="mv-f"><span class="nw">(h − 1)<sup>w</sup></span></div><div class="mv-f mv-sub" data-mv="h1w-sub"></div><div class="mv-n" data-mv="h1w">—</div></div>
+        <div class="mv-box c1 r3"><div class="mv-t"><span>Towers, height at most h − 1</span><i class="lampdot am" data-mv="l-high"></i></div><div class="mv-f"><span class="nw">P(h − 1, w)</span></div><div class="mv-f mv-sub" data-mv="high-sub"></div><div class="mv-n" data-mv="high">—</div></div>
+        <div class="mv-box c1 r4"><div class="mv-t"><span>Towers, height at most h − 2</span><i class="lampdot am" data-mv="l-low"></i></div><div class="mv-f"><span class="nw">P(h − 2, w)</span></div><div class="mv-f mv-sub" data-mv="low-sub"></div><div class="mv-n" data-mv="low">—</div></div>
+        <div class="mv-link merge top" aria-hidden="true"><i class="seg in1"></i><i class="seg in2"></i><i class="seg bus"></i><i class="seg out"></i><b class="op o">−</b></div>
+        <div class="mv-link merge bot" aria-hidden="true"><i class="seg in1"></i><i class="seg in2"></i><i class="seg bus"></i><i class="seg out"></i><b class="op o">−</b></div>
+        <div class="mv-box c2 top"><div class="mv-t"><span>Castles</span><i class="lampdot am" data-mv="l-all"></i></div><div class="mv-f"><span class="nw">A(w, h)</span> = h<sup>w</sup> − <span class="nw">(h − 1)<sup>w</sup></span></div><div class="mv-f mv-sub" data-mv="all-sub"></div><div class="mv-n" data-mv="all">—</div></div>
+        <div class="mv-box c2 bot"><div class="mv-t"><span>Signs of their towers</span><i class="lampdot am" data-mv="l-signs"></i></div><div class="mv-f"><span class="nw">P(h − 1, w)</span> − <span class="nw">P(h − 2, w)</span></div><div class="mv-f mv-sub" data-mv="signs-sub"></div><div class="mv-n" data-mv="signs">—</div></div>
+        <div class="mv-link cross" aria-hidden="true"><i class="seg in1l"></i><i class="seg in1r" data-mv="x-even"></i><i class="seg in2l"></i><i class="seg in2r" data-mv="x-odd"></i><i class="seg bus"></i><b class="op o1" data-mv="op-even">−</b><b class="op o2" data-mv="op-odd">+</b></div>
+        <div class="mv-box c3 top"><div class="mv-t"><span>Twice the even-block castles</span><i class="lampdot am" data-mv="l-twiceEven"></i></div><div class="mv-f">A − [<span class="nw">P(h − 1, w)</span> − <span class="nw">P(h − 2, w)</span>]</div><div class="mv-f mv-sub" data-mv="twiceEven-sub"></div><div class="mv-n" data-mv="twiceEven">—</div></div>
+        <div class="mv-box c3 bot"><div class="mv-t"><span>Twice the odd-block castles</span><i class="lampdot am" data-mv="l-twiceOdd"></i></div><div class="mv-f">A + [<span class="nw">P(h − 1, w)</span> − <span class="nw">P(h − 2, w)</span>]</div><div class="mv-f mv-sub" data-mv="twiceOdd-sub"></div><div class="mv-n" data-mv="twiceOdd">—</div></div>
+        <div class="mv-link half top" aria-hidden="true" data-mv="half-top"><i class="seg out"></i><b class="op o">½</b></div>
+        <div class="mv-link half bot" aria-hidden="true" data-mv="half-bot"><i class="seg out"></i><b class="op o">½</b></div>
+        <div class="mv-box c4 top mv-out"><div class="mv-t"><span>Even-block castles</span><i class="lampdot am" data-mv="l-even"></i></div><div class="mv-f"><span class="nw">A<sup>e</sup>(w, h)</span> = ½[h<sup>w</sup> − <span class="nw">(h − 1)<sup>w</sup></span> − <span class="nw">P(h − 1, w)</span> + <span class="nw">P(h − 2, w)</span>]</div><div class="mv-f mv-sub" data-mv="even-sub"></div><div class="mv-n mv-big" data-mv="even">—</div></div>
+        <div class="mv-box c4 bot mv-out"><div class="mv-t"><span>Odd-block castles</span><i class="lampdot am" data-mv="l-odd"></i></div><div class="mv-f"><span class="nw">A<sup>o</sup>(w, h)</span> = ½[h<sup>w</sup> − <span class="nw">(h − 1)<sup>w</sup></span> + <span class="nw">P(h − 1, w)</span> − <span class="nw">P(h − 2, w)</span>]</div><div class="mv-f mv-sub" data-mv="odd-sub"></div><div class="mv-n mv-big" data-mv="odd">—</div></div>
+        </div>
+      </div>
+      <p class="legend">Boxes hold counts and circles the step on each pipe; − takes the lower input from the upper. Lamps and glowing pipes mark this castle's path; past step 2 it follows its parity, and the other path goes dark. A tower is a castle without its bottom row. The report writes A<sup>e</sup>(w, h) as F(w, h); P is computed from its rational generating function, eq. (5.3).</p>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span><kbd>B</kbd> bricks · <kbd>G</kbd> grid · <kbd>L</kbd> line feed · <kbd>P</kbd> printout · <kbd>M</kbd> motion</span>
+  <span>Castle Foundry · REV. B</span>
+</footer>
+
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
