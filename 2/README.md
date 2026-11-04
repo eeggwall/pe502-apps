@@ -43,7 +43,7 @@ Two pages, picked with the keys at the top or <kbd>1</kbd> and <kbd>2</kbd>.
   edges, the short way round, to the corner of w. The center reads
   w = 6 × q + r and the exact S_F(w), and a pill says whether it matches. A
   waveform shows S_F over the last 36 widths. Jumps of ±6 and ×10, and an
-  auto-step (<kbd>W</kbd>).
+  auto-step (<kbd>W</kbd>). The width slider is logarithmic.
 * **Exact counts**: `castles.js` computes every count in BigInt twice, from
   the closed forms of PE502-2 Theorem 2 and eq. (4.4) and from the transfer
   matrix of eq. (3.2) with the blocks kept, which uses neither the Fibonacci

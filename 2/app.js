@@ -26,19 +26,18 @@ const S = { reduced: false, bricks: true };
 // Rails (role="slider"): amber thumb, zones and cyan ticks on the rail
 // ------------------------------------------------------------------------
 
-// The rail spans min … railMax; the value, typed or stepped, may run to max,
-// and past railMax the thumb rests at the end, striped.
-function makeRail(railId, numId, { min, max, railMax = max, page, valueText, onSet }) {
+// The rail spans min … max, evenly or, with log, evenly in log v.
+function makeRail(railId, numId, { min, max, log = false, page, valueText, onSet }) {
   const el = $(railId);
   const thumb = el.querySelector(".thumb");
   const num = $(numId);
   let value = min;
-  const frac = (v) => clamp((v - min) / (railMax - min), 0, 1);
+  const frac = (v) => clamp(log ? Math.log(v / min) / Math.log(max / min) : (v - min) / (max - min), 0, 1);
+  const atFrac = (f) => (log ? min * (max / min) ** f : min + f * (max - min));
 
   function show(v) {
     value = v;
     thumb.style.left = frac(v) * 100 + "%";
-    thumb.classList.toggle("past", v > railMax);
     el.setAttribute("aria-valuenow", v);
     el.setAttribute("aria-valuetext", valueText(v));
     if (document.activeElement !== num) num.value = v;
@@ -50,7 +49,7 @@ function makeRail(railId, numId, { min, max, railMax = max, page, valueText, onS
     show(v);
     onSet(v);
   }
-  const fromX = (x) => { const b = el.getBoundingClientRect(); return min + clamp((x - b.left) / b.width, 0, 1) * (railMax - min); };
+  const fromX = (x) => { const b = el.getBoundingClientRect(); return atFrac(clamp((x - b.left) / b.width, 0, 1)); };
 
   el.addEventListener("pointerdown", (e) => { el.setPointerCapture(e.pointerId); el._drag = true; set(fromX(e.clientX)); });
   el.addEventListener("pointermove", (e) => { if (el._drag) set(fromX(e.clientX)); });
@@ -430,7 +429,6 @@ function initExplorer() {
 // ------------------------------------------------------------------------
 
 const TW_MAX = 100000;
-const TW_RAIL = 120;
 const HIST = 36;                        // six periods
 const SWEEPS = [[0, "Off", "Off"], [1, "1", "1 width per second"], [2, "2", "2 widths per second"], [6, "6", "6 widths per second"], [30, "30", "30 widths per second"]];
 
@@ -453,9 +451,7 @@ function buildTracker() {
     tRail.set(j === "x10" ? T.w * 10 : T.w + Number(j));
   }));
 
-  const ticks = [];
-  for (let v = 6; v <= TW_RAIL; v += 6) ticks.push({ v, label: v % 30 === 0 && v < TW_RAIL ? String(v) : "" });
-  tRail.mark([], ticks);
+  tRail.mark([], [[10, "10"], [100, "100"], [1000, "1k"], [10000, "10k"]].map(([v, label]) => ({ v, label })));
   tRail.show(T.w);
 }
 
@@ -604,7 +600,7 @@ function refreshTracker() {
 }
 
 const tRail = makeRail("tw-rail", "tw-num", {
-  min: 1, max: TW_MAX, railMax: TW_RAIL, page: 6,
+  min: 1, max: TW_MAX, log: true, page: 6,
   valueText: (v) => `width ${v}`,
   onSet: (v) => { T.w = v; refreshTracker(); },
 });

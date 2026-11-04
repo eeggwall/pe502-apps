@@ -228,7 +228,6 @@ a:hover { border-bottom-color: var(--ink); }
 .tick { position: absolute; top: 8px; width: 1px; height: 14px; margin-left: -.5px; background: var(--cyan); opacity: .75; pointer-events: none; }
 .tick b { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font: 400 11px var(--mono); color: var(--cyan); opacity: .9; }
 .thumb { position: absolute; top: 4px; width: 12px; height: 22px; margin-left: -6px; border-radius: 2px; background: linear-gradient(180deg, #ffd7a0, var(--amber)); box-shadow: 0 0 12px rgba(255,179,71,.5), 0 1px 0 #000; pointer-events: none; }
-.thumb.past { background: repeating-linear-gradient(180deg, #ffd7a0 0 3px, var(--amber) 3px 6px); }
 .endcap { position: absolute; top: 25px; font: 11.5px var(--mono); color: var(--faint); }
 .stepper { display: inline-flex; align-items: center; border: 1px solid var(--hair-2); border-radius: 3px; background: var(--well); overflow: hidden; }
 .stepper .tag { padding: 0 8px; font: 12px var(--mono); font-style: italic; color: var(--faint); }
