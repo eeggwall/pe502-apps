@@ -267,14 +267,23 @@ a:hover { border-bottom-color: var(--ink); }
 .rank-btns { margin-left: auto; }
 .rank-note { min-height: 4.8em; }
 
-/* the period: one box per residue of w mod 6, the current one lit */
-.cycle { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
-.cyc { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 8px; background: var(--well); border: 1px solid var(--hair); border-radius: 3px; }
-.cyc-r { font: 12px var(--mono); color: var(--faint); white-space: nowrap; }
-.cyc-v { font: 28px/1 var(--mono); color: var(--cyan); }
-.cyc.on { border-color: var(--amber); box-shadow: 0 0 10px rgba(255,179,71,.3); }
-.cyc.on .cyc-r { color: var(--amber); }
-@media (max-width: 560px) { .cyc-r { font-size: 10.5px; } .cyc-v { font-size: 22px; } }
+/* the period as a hexagon: a corner per leftover of w ÷ 6, the exact S_F in the center */
+.hexwrap { display: flex; justify-content: center; margin-top: 12px; }
+.hex { display: block; width: 100%; max-width: 320px; height: auto; }
+.hex text { text-anchor: middle; dominant-baseline: central; font-family: var(--mono); }
+.hex .strip { fill: none; stroke: #070A09; stroke-width: 15; stroke-linejoin: round; }
+.hex .led { fill: #1d2421; transition: fill .35s; }
+.hex .led.on { fill: var(--amber); transition: none; }
+.hex .vglow { fill: rgba(255,179,71,.28); opacity: 0; }
+.hex .vglow.on { opacity: 1; }
+.hex .vled { fill: #1d2421; stroke: #000; stroke-width: 2; }
+.hex .vled.on { fill: var(--amber); }
+.hex .val { font-size: 26px; fill: var(--cyan); }
+.hex .cw { font-size: 20px; fill: var(--amber); }
+.hex .ceq { font-size: 14px; fill: var(--dim); }
+.hex .csf { font-size: 32px; fill: var(--ink); }
+.hex .csf .s { font-size: 18px; }
+.hex-foot { display: flex; justify-content: center; margin-top: 6px; }
 
 /* waveform */
 .cv-wave { display: block; width: 100%; height: 180px; }

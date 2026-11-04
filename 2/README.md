@@ -35,10 +35,15 @@ Two pages, picked with the keys at the top or <kbd>1</kbd> and <kbd>2</kbd>.
   castles; Exchange (<kbd>X</kbd>) swaps heights 1 and 2 (PE502-2 Figure 5).
   Up to width 10 a catalog draws every Fibonacci castle, split by parity.
 * **Parity tracker**: no drawing, only exact counts, at widths 1 to 100,000
-  (A_F(100,000) has 20,899 digits): A_F(w), A^e_F(w), A^o_F(w), and S_F(w)
-  beside the six values of its period (PE502-2 Theorem 3), with a waveform of
-  S_F over the last 36 widths. Jumps of ±6 and ×10, and an auto-step
-  (<kbd>W</kbd>).
+  (A_F(100,000) has 20,899 digits): A_F(w), A^e_F(w), A^o_F(w) and their
+  difference S_F(w), and a Parity difference panel: the period of PE502-2
+  Theorem 3 as a hexagon, one corner per leftover of w ÷ 6, 0 at the top and
+  clockwise, each with an amber LED and the S_F it predicts (0, 1, 2, 2, 1, 0
+  going around). When w changes, a light runs along the LED strip on the
+  edges, the short way round, to the corner of w. The center reads
+  w = 6 × q + r and the exact S_F(w), and a pill says whether it matches. A
+  waveform shows S_F over the last 36 widths. Jumps of ±6 and ×10, and an
+  auto-step (<kbd>W</kbd>).
 * **Exact counts**: `castles.js` computes every count in BigInt twice, from
   the closed forms of PE502-2 Theorem 2 and eq. (4.4) and from the transfer
   matrix of eq. (3.2) with the blocks kept, which uses neither the Fibonacci

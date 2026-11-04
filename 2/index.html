@@ -157,9 +157,10 @@
 
         <div class="mod">
           <div class="lab"><span>Parity difference</span><span class="sub">S<sub>F</sub>(w) = A<sup>e</sup><sub>F</sub>(w) − A<sup>o</sup><sub>F</sub>(w)</span></div>
-          <div class="readrow"><span class="big" id="sf-big">—</span><span class="unit" id="sf-what"></span></div>
-          <div class="cycle" id="cycle"></div>
-          <p class="legend">How many more Fibonacci castles have an even number of blocks than an odd number. By Theorem 3 it repeats 1, 2, 2, 1, 0, 0 as w goes up, with period 6. The big number is the exact count; the highlighted box is the prediction.</p>
+          <div class="theory lead">How many more Fibonacci castles of width w have an even number of blocks than an odd number.</div>
+          <div class="hexwrap"><svg class="hex" id="hex" viewBox="0 0 320 320" role="img" aria-label="The period of S_F as a hexagon: one corner per leftover of w divided by 6, the corner of w lit"></svg></div>
+          <div class="hex-foot"><span class="pill" id="d-check">—</span></div>
+          <p class="legend">The corners run clockwise through the leftovers of w ÷ 6, from 0 at the top, each with the S<sub>F</sub> that PE502-2 Theorem 3 predicts. The amber light marks w; the center holds the exact S<sub>F</sub>(w).</p>
         </div>
       </div>
 

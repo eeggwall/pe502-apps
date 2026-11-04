@@ -442,10 +442,9 @@ function buildTracker() {
   $("t-counts").innerHTML =
     row("tF", "A<sub>F</sub>(w)", "All Fibonacci castles of width w: F<sub>w+2</sub> − 1, Theorem 2.") +
     row("tFe", "A<sup>e</sup><sub>F</sub>(w)", "Those with an even number of blocks.") +
-    row("tFo", "A<sup>o</sup><sub>F</sub>(w)", "Those with an odd number of blocks.");
-  // the six values of the period, one box per residue of w mod 6
-  $("cycle").innerHTML = [1, 2, 3, 4, 5, 0].map((r, k) =>
-    `<div class="cyc" data-k="${k}"><span class="cyc-r">w mod 6 = ${r}</span><span class="cyc-v">${C.SF_TABLE[k]}</span></div>`).join("");
+    row("tFo", "A<sup>o</sup><sub>F</sub>(w)", "Those with an odd number of blocks.") +
+    row("tS", "S<sub>F</sub>(w)", "A<sup>e</sup><sub>F</sub>(w) − A<sup>o</sup><sub>F</sub>(w), the S<sub>F</sub> at the center of the hexagon.");
+  buildHex();
 
   $("sweepSeg").innerHTML = SWEEPS.map(([v, t, label]) => `<button data-v="${v}" aria-label="${label}" aria-pressed="${v === 0}">${t}</button>`).join("");
   $("sweepSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setSweep(Number(b.dataset.v)); });
@@ -526,14 +525,80 @@ const putNum = (key, n) => {
   $(key + "-d").textContent = digitsText(n);
 };
 
+// ---- the period as a hexagon ---------------------------------------------
+
+// Corner r is the leftover r of w ÷ 6, clockwise from 0 at the top, with
+// S_F outside it; going around reads 0, 1, 2, 2, 1, 0.  Edge e runs from
+// corner e to corner e + 1 as a strip of LEDs, and a light runs along it
+// when w moves.
+const HX = { cx: 160, cy: 160, R: 112, per: 6, r: null, run: 0 };
+const hxPt = (i, rad) => { const a = (-90 + 60 * i) * Math.PI / 180; return [HX.cx + rad * Math.cos(a), HX.cy + rad * Math.sin(a)]; };
+
+function buildHex() {
+  const corners = [0, 1, 2, 3, 4, 5].map((i) => hxPt(i, HX.R));
+  const pts = corners.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  let s = `<polygon class="strip" points="${pts}"/>`;
+  for (let e = 0; e < 6; e++) {
+    const [x0, y0] = corners[e], [x1, y1] = corners[(e + 1) % 6];
+    for (let k = 1; k <= HX.per; k++) {
+      const t = k / (HX.per + 1);
+      s += `<circle class="led" data-e="${e}" r="3.4" cx="${(x0 + t * (x1 - x0)).toFixed(1)}" cy="${(y0 + t * (y1 - y0)).toFixed(1)}"/>`;
+    }
+  }
+  corners.forEach(([x, y], i) => {
+    const [vx, vy] = hxPt(i, HX.R + 30);
+    s += `<circle class="vglow" data-v="${i}" r="15" cx="${x}" cy="${y}"/><circle class="vled" data-v="${i}" r="8" cx="${x}" cy="${y}"/>` +
+      `<text class="val" x="${vx}" y="${vy}">${C.SF(i || 6)}</text>`;
+  });
+  s += `<text class="cw" id="hx-w" x="${HX.cx}" y="${HX.cy - 36}"></text><text class="ceq" id="hx-eq" x="${HX.cx}" y="${HX.cy - 12}"></text>` +
+    `<text class="csf" x="${HX.cx}" y="${HX.cy + 32}">S<tspan class="s" dy="7">F</tspan><tspan dy="-7"> = </tspan><tspan id="hx-sf"></tspan></text>`;
+  const svg = $("hex");
+  svg.innerHTML = s;
+  HX.leds = [0, 1, 2, 3, 4, 5].map((e) => [...svg.querySelectorAll(`.led[data-e="${e}"]`)]);
+  HX.corner = [0, 1, 2, 3, 4, 5].map((i) => [...svg.querySelectorAll(`[data-v="${i}"]`)]);
+}
+
+const lightCorner = (r) => HX.corner.forEach((els, i) => els.forEach((el) => el.classList.toggle("on", i === r)));
+
+function moveHex(w) {
+  const r = w % 6, from = HX.r;
+  HX.r = r;
+  $("hx-w").textContent = `w = ${fmt(w)}`;
+  $("hx-eq").textContent = `= 6 × ${fmt(Math.floor(w / 6))} + ${r}`;
+  const run = ++HX.run;
+  HX.leds.flat().forEach((el) => el.classList.remove("on"));
+  if (from === null || from === r || S.reduced) { lightCorner(r); return; }
+  // the short way round, LED by LED
+  let d = (r - from + 6) % 6, dir = 1;
+  if (d > 3) { d = 6 - d; dir = -1; }
+  const seq = [];
+  for (let s = 0, c = from; s < d; s++, c = (c + dir + 6) % 6) seq.push(...(dir > 0 ? HX.leds[c] : [...HX.leds[(c + 5) % 6]].reverse()));
+  lightCorner(-1);
+  const budget = T.sweep ? 700 / T.sweep : 260 * d, step = Math.min(30, budget / seq.length), t0 = performance.now();
+  const frame = (now) => {
+    if (run !== HX.run) return;
+    const i = Math.floor((now - t0) / step);
+    seq.forEach((el, j) => el.classList.toggle("on", j === i));
+    if (i < seq.length) requestAnimationFrame(frame);
+    else lightCorner(r);
+  };
+  requestAnimationFrame(frame);
+}
+
+function renderDiff(w, tm) {
+  moveHex(w);
+  $("hx-sf").textContent = String(tm.S);
+  const ok = tm.S === BigInt(C.SF(w));
+  $("d-check").textContent = ok ? "Exact count matches" : "Exact count differs";
+  $("d-check").className = "pill " + (ok ? "cy" : "rd");
+}
+
 function refreshTracker() {
   const w = T.w, tm = C.transfer(w, "fibonacci");
-  $("sf-big").textContent = String(tm.S);
-  $("sf-what").textContent = `at w = ${fmt(w)}`;
-  const k = (w - 1) % 6;
-  $("cycle").querySelectorAll(".cyc").forEach((el) => el.classList.toggle("on", Number(el.dataset.k) === k));
+  renderDiff(w, tm);
   $("tc-sub").textContent = `width w = ${fmt(w)}`;
-  putNum("tF", tm.all); putNum("tFe", tm.even); putNum("tFo", tm.odd);
+  putNum("tF", tm.all); putNum("tFe", tm.even); putNum("tFo", tm.odd); putNum("tS", tm.S);
+  $("tS-d").textContent = "";   // always one digit
   renderWave();
   writeHash();
 }
