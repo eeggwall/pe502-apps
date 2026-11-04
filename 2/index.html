@@ -40,6 +40,8 @@
 <section class="bay" id="bay-explorer" role="tabpanel" aria-labelledby="tab-explorer">
   <div class="bay-head"><span class="bay-no">SHEET 01</span><h2 class="bay-title">Explorer</h2><span class="bay-sub">One castle of height 2 at a time</span></div>
   <div class="bay-body">
+    <section class="ann" id="ann" aria-label="Annunciator"></section>
+
     <div class="mod">
       <div class="lab"><span class="name"><span class="led amber"></span>Castle field</span><span class="sub" id="x-fieldsub"></span></div>
       <div class="well field-well" id="x-wrap"><canvas id="field" tabindex="0" aria-label="Castle field. Click a column to switch its height between 1 and 2, or drag to paint. With the field focused, left and right arrows pick a column, up and down set its height, and space switches it."></canvas></div>
@@ -106,16 +108,13 @@
           <div class="theory" data-f="blocks-note"></div>
         </div>
         <div class="mod">
-          <div class="lab"><span>Families</span><span class="sub">PE502-2 Definitions 5 and 15</span></div>
-          <div class="rules">
-            <div class="rule-row"><i class="lampdot am" data-f="fib-lamp"></i><b>Fibonacci castle</b><span class="pill" data-f="fib-pill">—</span><span class="rdesc">No two neighboring columns both of height 2.</span><span class="rwhere" data-f="fib-where"></span></div>
-            <div class="rule-row"><i class="lampdot am" data-f="ridge-lamp"></i><b>Ridge castle</b><span class="pill" data-f="ridge-pill">—</span><span class="rdesc">No two neighboring columns both of height 1.</span><span class="rwhere" data-f="ridge-where"></span></div>
-          </div>
-        </div>
-        <div class="mod">
           <div class="lab"><span>Castle counts</span><span class="sub" data-f="counts-sub"></span></div>
-          <div class="theory lead">A lamp marks each count this castle is part of.</div>
-          <div class="counts" id="x-counts"></div>
+          <div class="theory lead">The castles of this width w and height 2, of which this castle is one. The lamps mark the counts it is part of.</div>
+          <div class="counts">
+            <div class="count"><i class="lampdot am" data-f="all-lamp"></i><span class="cname">A(<span data-f="all-w"></span>, 2)</span><span class="num" data-f="all-num">—</span><span class="cdesc">All castles: 2<sup>w</sup> − 1, the skylines with every c<sub>i</sub> 1 or 2, less the flat one (1, …, 1).</span></div>
+            <div class="count"><i class="lampdot am" data-f="even-lamp"></i><span class="cname">A<sup>e</sup>(<span data-f="even-w"></span>, 2)</span><span class="num" data-f="even-num">—</span><span class="cdesc">Even-block castles, the castles Project Euler Problem 502 counts.</span></div>
+            <div class="count"><i class="lampdot am" data-f="odd-lamp"></i><span class="cname">A<sup>o</sup>(<span data-f="odd-w"></span>, 2)</span><span class="num" data-f="odd-num">—</span><span class="cdesc">Odd-block castles: A(w, 2) − A<sup>e</sup>(w, 2).</span></div>
+          </div>
         </div>
       </div>
     </div>

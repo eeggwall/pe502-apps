@@ -111,6 +111,13 @@ a:hover { border-bottom-color: var(--ink); }
 .btn:focus-visible, .stepper button:focus-visible, .seg button:focus-visible, .key:focus-visible,
 #field:focus-visible, .thumbc:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
+/* ---------- annunciator strip, as in ../1/, above the field ---------- */
+.ann { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; padding: 8px; background: #030403; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--hair); }
+@media (max-width: 760px) { .ann { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+.tile { min-height: 64px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px; border-radius: 2px; background: linear-gradient(180deg, #151b19, #0d1110); border: 1px solid #000; box-shadow: inset 0 0 0 1px rgba(255,255,255,.035); color: #48514b; font: 600 12px/1.25 var(--ui); letter-spacing: .13em; text-transform: uppercase; }
+.tile small { font: 12px/1.35 var(--mono); letter-spacing: .02em; opacity: .85; text-transform: none; }
+.tile.am { background: radial-gradient(120% 120% at 50% 40%, rgba(255,179,71,.45), rgba(255,179,71,.12)); color: #fff4e2; text-shadow: 0 0 6px rgba(255,179,71,.8); box-shadow: inset 0 0 14px rgba(255,179,71,.35), 0 0 12px rgba(255,179,71,.16); }
+
 /* ---------- page keys, after ../index.html's bay keys ---------- */
 .keys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .key { appearance: none; font: inherit; color: var(--dim); cursor: pointer; text-align: left;
@@ -203,23 +210,13 @@ a:hover { border-bottom-color: var(--ink); }
 .count .lampdot { align-self: start; margin-top: 6px; }
 .count .cname { font: 14px var(--mono); color: var(--dim); white-space: nowrap; }
 .count .num { font: 21px/1.25 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; min-width: 0; }
-.count .num.long { font-size: 13.5px; line-height: 1.5; }
 .count .cdesc { grid-column: 2 / -1; font-size: 13px; line-height: 1.45; color: var(--dim); }
 .count.nolamp { grid-template-columns: auto minmax(0,1fr); }
 .count.nolamp .cdesc { grid-column: 1 / -1; }
-.count + .count.sep { margin-top: 2px; padding-top: 12px; border-top: 1px solid var(--hair); }
 /* whole numbers thousands of digits long scroll in a well */
 .numwell { grid-column: 1 / -1; max-height: calc(6 * 1.6em + 8px); overflow-y: auto; padding: 8px 10px 0; font: 13px/1.6 var(--mono); color: var(--ink); overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-color: var(--hair-2) transparent; }
 .numwell.short { font-size: 21px; line-height: 1.3; padding-bottom: 8px; }
 .digits { font: 12px var(--mono); color: var(--faint); white-space: nowrap; }
-
-/* family rules */
-.rules { display: flex; flex-direction: column; gap: 12px; }
-.rule-row { display: grid; grid-template-columns: 12px auto 1fr; gap: 4px 10px; align-items: center; }
-.rule-row b { font: 600 11px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--ink); }
-.rule-row .pill { justify-self: start; }
-.rule-row .rdesc, .rule-row .rwhere { grid-column: 2 / -1; font-size: 13px; line-height: 1.45; color: var(--dim); }
-.rule-row .rwhere { font: 12px/1.5 var(--mono); color: var(--faint); }
 
 /* rails: amber thumb, faint endcaps, zones and cyan ticks marked on the rail */
 .dim-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 14px; align-items: center; }

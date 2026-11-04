@@ -107,14 +107,6 @@ const X = {
   f: {},
 };
 
-// Columns i, i + 1 (0-based i) as "columns 2–3" and lists of them.
-const pairText = (i) => `${i + 1}–${i + 2}`;
-function pairList(list) {
-  const t = list.slice(0, 6).map(pairText);
-  const more = list.length > 6 ? `, and ${list.length - 6} more` : "";
-  return (t.length > 1 ? t.slice(0, -1).join(", ") + " and " + t[t.length - 1] : t[0]) + more;
-}
-
 function makeSheet(c) {
   const h = C.height(c), w = c.length;
   const blocks = C.blocks(c);
@@ -212,20 +204,32 @@ function cellAt(e) {
 
 // ---- readouts ------------------------------------------------------------
 
-const COUNT_ROWS = [
-  { key: "all", name: "A(w, 2)", desc: "All castles of height 2: 2<sup>w</sup> − 1." },
-  { key: "alle", name: "A<sup>e</sup>(w, 2)", desc: "Those with an even number of blocks." },
-  { key: "allo", name: "A<sup>o</sup>(w, 2)", desc: "Those with an odd number of blocks." },
-  { key: "F", name: "A<sub>F</sub>(w)", desc: "Fibonacci castles: F<sub>w+2</sub> − 1, Theorem 2.", sep: true },
-  { key: "Fe", name: "A<sup>e</sup><sub>F</sub>(w)", desc: "Those with an even number of blocks." },
-  { key: "Fo", name: "A<sup>o</sup><sub>F</sub>(w)", desc: "Those with an odd number of blocks." },
-  { key: "R", name: "A<sub>ridge</sub>(w, 2)", desc: "Ridge castles: F<sub>w+2</sub> for w ≥ 2.", sep: true },
+function buildExplorer() {
+  $("bay-explorer").querySelectorAll("[data-f]").forEach((el) => { X.f[el.dataset.f] = el; });
+}
+
+// ---- annunciator, above the field ----------------------------------------
+
+// The castle's families and parity, notifications in amber: neither family
+// and neither parity is a fault.
+const ALARMS = [
+  { id: "fib",   t: "Fibonacci castle",  s: "no two neighboring columns of height 2", c: () => X.sheet.fib },
+  { id: "ridge", t: "Ridge castle",      s: "no two neighboring columns of height 1", c: () => X.sheet.ridge },
+  { id: "even",  t: "Even-block castle", s: "an even number of blocks", c: () => X.sheet.even },
+  { id: "odd",   t: "Odd-block castle",  s: "an odd number of blocks", c: () => !X.sheet.even },
 ];
 
-function buildExplorer() {
-  $("x-counts").innerHTML = COUNT_ROWS.map((r) =>
-    `<div class="count${r.sep ? " sep" : ""}"><i class="lampdot am" data-f="${r.key}-lamp"></i><span class="cname">${r.name.replace("(w", "(<span data-f=\"" + r.key + "-w\"></span>")}</span><span class="num" data-f="${r.key}-num">—</span><span class="cdesc">${r.desc}</span></div>`).join("");
-  $("bay-explorer").querySelectorAll("[data-f]").forEach((el) => { X.f[el.dataset.f] = el; });
+function buildAnn() {
+  $("ann").innerHTML = ALARMS.map((a) => `<div class="tile" id="an-${a.id}"><span>${a.t}</span><small>${a.s}</small></div>`).join("");
+  ALARMS.forEach((a) => { a.el = $("an-" + a.id); a.cls = "tile"; });
+}
+
+// Each tile is lit while its condition holds and dark otherwise.
+function updAnn() {
+  ALARMS.forEach((a) => {
+    const cls = "tile" + (a.c() ? " am" : "");
+    if (cls !== a.cls) { a.cls = cls; a.el.className = cls; }
+  });
 }
 
 function renderExplorer() {
@@ -242,23 +246,12 @@ function renderExplorer() {
       ? `The bottom row is one block, and each of the m = ${m} columns of height 2 is a block of its own, PE502-2 Lemma 8: 1 + ${m} = ${sh.blocks}. So a Fibonacci castle has an even number of blocks exactly when m is odd.`
       : `The bottom row is one block, and the second row has ${runs} run${runs === 1 ? "" : "s"} of cells: 1 + ${runs} = ${sh.blocks}, the total descent of the padded skyline, eq. (1.2).`;
 
-  for (const [key, yes, breaks, what] of [["fib", sh.fib, sh.fibBreaks, "a 2 × 2 square"], ["ridge", sh.ridge, sh.ridgeBreaks, "two neighboring columns of height 1"]]) {
-    f[key + "-lamp"].classList.toggle("on", yes);
-    f[key + "-pill"].textContent = yes ? "Yes" : "No";
-    f[key + "-pill"].className = "pill" + (yes ? " am" : "");
-    f[key + "-where"].innerHTML = !sh.h2 ? "Height 1: not a castle of height 2."
-      : breaks.length ? `Breaks at columns ${pairList(breaks)}: ${what}.`
-      : "Holds at every neighboring pair.";
-  }
+  updAnn();
 
-  f["counts-sub"].textContent = `width w = ${w}`;
+  f["counts-sub"].textContent = `this castle: w = ${w}, h = 2`;
   const cf = C.closedForm(w), a2 = C.allHeight2(w);
-  const vals = { all: [a2.all, sh.h2], alle: [a2.even, sh.h2 && sh.even], allo: [a2.odd, sh.h2 && !sh.even],
-    F: [cf.AF, sh.fib], Fe: [cf.even, sh.fib && sh.even], Fo: [cf.odd, sh.fib && !sh.even], R: [C.ridgeCount(w), sh.ridge] };
-  for (const [key, [n, lit]] of Object.entries(vals)) {
-    const t = group(n);
-    f[key + "-num"].textContent = t;
-    f[key + "-num"].classList.toggle("long", t.length > 16);
+  for (const [key, n, lit] of [["all", a2.all, sh.h2], ["even", a2.even, sh.h2 && sh.even], ["odd", a2.odd, sh.h2 && !sh.even]]) {
+    f[key + "-num"].textContent = group(n);
     f[key + "-w"].textContent = w;
     f[key + "-lamp"].classList.toggle("on", lit);
   }
@@ -377,6 +370,7 @@ const xRail = makeRail("xw-rail", "xw-num", {
 
 function initExplorer() {
   buildExplorer();
+  buildAnn();
   const svg = $("field");   // the field canvas
 
   const paintAt = (col) => {
