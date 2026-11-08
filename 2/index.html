@@ -22,7 +22,7 @@
     <span class="led cyan idle" title="Master lamp"></span>
   </div>
   <div class="titleblock" aria-label="Title block">
-    <div><span>SHEET</span><b><span id="sheetNo">01</span> OF 02</b></div>
+    <div><span>BAY</span><b><span id="bayNo">001</span> OF 002</b></div>
     <div><span>REV.</span><b>B</b></div>
     <div><span>DRAWN</span><b>2026-11-03</b></div>
     <div><span>REPORT</span><b>PE502-2</b></div>
@@ -38,7 +38,7 @@
 
 <!-- ============ EXPLORER ============ -->
 <section class="bay" id="bay-explorer" role="tabpanel" aria-labelledby="tab-explorer">
-  <div class="bay-head"><span class="bay-no">SHEET 01</span><h2 class="bay-title">Explorer</h2><span class="bay-sub">One castle of height 2 at a time</span></div>
+  <div class="bay-head"><span class="bay-no">BAY 001</span><h2 class="bay-title">Explorer</h2><span class="bay-sub">One castle of height 2 at a time</span></div>
   <div class="bay-body">
     <section class="ann" id="ann" aria-label="Annunciator"></section>
 
@@ -122,14 +122,14 @@
     <div class="mod">
       <div class="lab"><span>Catalog</span><span class="sub" id="cat-sub"></span></div>
       <div class="catalog" id="catalog"></div>
-      <p class="legend">Every Fibonacci castle of width w, numbered by rank. Click one to draw it; the framed one is on the field.</p>
+      <p class="legend" id="cat-legend">Every Fibonacci castle of width w, numbered by rank. Click one to draw it; the framed one is on the field.</p>
     </div>
   </div>
 </section>
 
 <!-- ============ PARITY TRACKER ============ -->
 <section class="bay" id="bay-tracker" role="tabpanel" aria-labelledby="tab-tracker" hidden>
-  <div class="bay-head"><span class="bay-no">SHEET 02</span><h2 class="bay-title">Parity tracker</h2><span class="bay-sub">Fibonacci castles counted, never drawn</span></div>
+  <div class="bay-head"><span class="bay-no">BAY 002</span><h2 class="bay-title">Parity tracker</h2><span class="bay-sub">Fibonacci castles counted</span></div>
   <div class="bay-body">
     <div class="g2">
       <div class="col">

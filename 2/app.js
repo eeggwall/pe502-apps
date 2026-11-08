@@ -18,6 +18,8 @@ function group(n) {
   for (let end = s.length; end > 0; end -= 3) parts.push(s.slice(Math.max(0, end - 3), end));
   return (neg ? "−" : "") + parts.reverse().join(",");
 }
+// line breaks fall only between triplets: <wbr> after each comma
+const groupHTML = (n) => group(n).replaceAll(",", ",<wbr>");
 const digitCount = (n) => (n < 0n ? -n : n).toString().length;
 const digitsText = (n) => { const d = digitCount(n); return `${fmt(d)} digit${d === 1 ? "" : "s"}`; };
 const S = { reduced: false, bricks: true };
@@ -250,7 +252,7 @@ function renderExplorer() {
   f["counts-sub"].textContent = `this castle: w = ${w}, h = 2`;
   const cf = C.closedForm(w), a2 = C.allHeight2(w);
   for (const [key, n, lit] of [["all", a2.all, sh.h2], ["even", a2.even, sh.h2 && sh.even], ["odd", a2.odd, sh.h2 && !sh.even]]) {
-    f[key + "-num"].textContent = group(n);
+    f[key + "-num"].innerHTML = groupHTML(n);
     f[key + "-w"].textContent = w;
     f[key + "-lamp"].classList.toggle("on", lit);
   }
@@ -300,6 +302,7 @@ function renderCatalog() {
   CAT.key = key;
   const box = $("catalog");
   const cf = C.closedForm(w);
+  $("cat-legend").hidden = w > CATALOG_MAX;
   if (w > CATALOG_MAX) {
     $("cat-sub").textContent = `width ${w} · drawn up to width ${CATALOG_MAX}`;
     box.innerHTML = `<div class="cat-none">${group(cf.AF)} Fibonacci castles at width ${w}: too many to draw. The catalog draws them up to width ${CATALOG_MAX}; the Parity tracker counts them at any width.</div>`;
@@ -516,7 +519,7 @@ function renderWave() {
 // ---- refresh -------------------------------------------------------------
 
 const putNum = (key, n) => {
-  $(key + "-n").textContent = group(n);
+  $(key + "-n").innerHTML = groupHTML(n);
   $(key + "-n").classList.toggle("short", digitCount(n) <= 18);
   $(key + "-d").textContent = digitsText(n);
 };
@@ -628,7 +631,7 @@ function showTab(t) {
   TABS.forEach((x, i) => {
     $("bay-" + x).hidden = x !== t;
     $("tab-" + x).setAttribute("aria-selected", x === t);
-    if (x === t) $("sheetNo").textContent = String(i + 1).padStart(2, "0");
+    if (x === t) $("bayNo").textContent = String(i + 1).padStart(3, "0");
   });
   if (t === "explorer") drawField(); else renderWave();
   writeHash();
