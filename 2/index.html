@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fibonacci Castles · PE502</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="fonts.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="frame">
+
+<header class="head">
+  <div class="plate">
+    <i class="screw tl"></i><i class="screw tr"></i><i class="screw bl"></i><i class="screw br"></i>
+    <div class="seal" aria-hidden="true"><svg viewBox="0 0 88 60"><g fill="#6FA9CB" stroke="#2E5F7D" stroke-width="2"><rect x="2" y="44" width="84" height="14"/><rect x="16" y="30" width="56" height="14"/><rect x="16" y="16" width="14" height="14"/><rect x="44" y="16" width="14" height="14"/><rect x="44" y="2" width="14" height="14"/></g></svg></div>
+    <div>
+      <h1 class="plate-main">PE502</h1>
+      <div class="plate-sub">Castle polyominoes, after Project Euler problem 502</div>
+    </div>
+    <span class="led cyan idle" title="Master lamp"></span>
+  </div>
+  <div class="titleblock" aria-label="Title block">
+    <div><span>BAY</span><b><span id="bayNo">001</span> OF 002</b></div>
+    <div><span>REV.</span><b>B</b></div>
+    <div><span>DRAWN</span><b>2026-11-03</b></div>
+    <div><span>REPORT</span><b>PE502-2</b></div>
+  </div>
+</header>
+
+<p class="brief">Castles of height 2, a companion to technical report PE502-2, <i>Fibonacci Castles</i>. A <b>Fibonacci castle</b> has no two neighboring columns of height 2.</p>
+
+<nav class="keys" role="tablist" aria-label="Pages">
+  <button class="key" role="tab" id="tab-explorer" aria-controls="bay-explorer" data-tab="explorer"><i class="lamp"></i><span class="kn">1</span><span class="kl">Explorer</span><span class="kd">Draw one castle, widths 1 to 40</span></button>
+  <button class="key" role="tab" id="tab-tracker" aria-controls="bay-tracker" data-tab="tracker"><i class="lamp"></i><span class="kn">2</span><span class="kl">Parity tracker</span><span class="kd">Count only, widths up to 100,000</span></button>
+</nav>
+
+<!-- ============ EXPLORER ============ -->
+<section class="bay" id="bay-explorer" role="tabpanel" aria-labelledby="tab-explorer">
+  <div class="bay-head"><span class="bay-no">BAY 001</span><h2 class="bay-title">Explorer</h2><span class="bay-sub">One castle of height 2 at a time</span></div>
+  <div class="bay-body">
+    <section class="ann" id="ann" aria-label="Annunciator"></section>
+
+    <div class="mod">
+      <div class="lab"><span class="name"><span class="led amber"></span>Castle field</span><span class="sub" id="x-fieldsub"></span></div>
+      <div class="well field-well" id="x-wrap"><canvas id="field" tabindex="0" aria-label="Castle field. Click a column to switch its height between 1 and 2, or drag to paint. With the field focused, left and right arrows pick a column, up and down set its height, and space switches it."></canvas></div>
+      <div class="stamp" id="x-stamp"></div>
+      <p class="legend">Click a column to switch its height between 1 and 2, or drag across several.</p>
+      <ul class="key-list">
+        <li><i class="sw stone"></i>A filled cell; each block is one brick</li>
+        <li><i class="sw ceil"></i>Ceiling at height 2</li>
+        <li><i class="sw sq"></i>2 × 2 square, where the Fibonacci rule breaks</li>
+        <li><i class="sw notch"></i>Gap over two columns of height 1, where the ridge rule breaks</li>
+        <li><i class="sw ptr"></i>Cell under the pointer</li>
+      </ul>
+    </div>
+
+    <div class="g2 wide-left">
+      <div class="col">
+        <div class="mod">
+          <div class="lab"><span>Width w</span><span class="sub">1 – 40 columns</span></div>
+          <div class="dim-row">
+            <div class="rail-wrap" id="xw-rail" role="slider" tabindex="0" aria-label="Width w" aria-valuemin="1" aria-valuemax="40">
+              <div class="rail"></div><div class="zones"></div><div class="ticks"></div><div class="thumb"></div>
+              <span class="endcap" style="left:0">1</span><span class="endcap" style="right:0">40</span>
+            </div>
+            <div class="stepper"><span class="tag">w</span><button data-step="-1" aria-label="Decrease width">−</button><input id="xw-num" type="number" min="1" max="40" inputmode="numeric" aria-label="Width w" /><button data-step="1" aria-label="Increase width">+</button></div>
+          </div>
+        </div>
+
+        <div class="mod">
+          <div class="lab"><span>Generators</span><span class="sub">every castle of the family equally likely</span></div>
+          <div class="ctl">
+            <span class="klab">Draw at random</span>
+            <div class="btn-row">
+              <button class="btn" data-gen="height2">Height 2</button>
+              <button class="btn" data-gen="fibonacci">Fibonacci</button>
+              <button class="btn" data-gen="ridge">Ridge</button>
+            </div>
+          </div>
+          <div class="ctl">
+            <span class="klab">Transform</span>
+            <div class="btn-row">
+              <button class="btn" data-gen="exchange">Exchange 1 ↔ 2<kbd>X</kbd></button>
+              <button class="btn" data-gen="alternate">Alternate 2, 1, …</button>
+              <button class="btn" data-gen="flat">Flat</button>
+            </div>
+          </div>
+          <p class="legend">Exchange swaps heights 1 and 2 (PE502-2 Figure 5), turning a Fibonacci castle into a ridge castle.</p>
+        </div>
+
+        <div class="mod">
+          <div class="lab"><span>Zeckendorf rank</span><span class="sub">PE502-2 Proposition 13</span></div>
+          <div class="readrow rank-row">
+            <span class="big" data-f="rank">—</span><span class="unit" data-f="rank-of"></span>
+            <span class="btn-row rank-btns"><button class="btn" id="rankDown">Rank − 1<kbd>[</kbd></button><button class="btn" id="rankUp">Rank + 1<kbd>]</kbd></button></span>
+          </div>
+          <div class="theory rank-note" data-f="rank-note"></div>
+          <p class="legend">Column i weighs F<sub>w+2−i</sub>, and the rank adds up the weights of the columns of height 2. It numbers the Fibonacci castles 1 to F<sub>w+2</sub> − 1 in lexicographic order.</p>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="mod">
+          <div class="lab"><span>Blocks</span><span class="sub">maximal runs of filled cells in one row</span></div>
+          <div class="readrow"><span class="big" data-f="blocks">—</span><span class="pill" data-f="parity">—</span></div>
+          <div class="theory" data-f="blocks-note"></div>
+        </div>
+        <div class="mod">
+          <div class="lab"><span>Castle counts</span><span class="sub" data-f="counts-sub"></span></div>
+          <div class="theory lead">The castles of this width w and height 2, of which this castle is one. The lamps mark the counts it is part of.</div>
+          <div class="counts">
+            <div class="count"><i class="lampdot am" data-f="all-lamp"></i><span class="cname">A(<span data-f="all-w"></span>, 2)</span><span class="num" data-f="all-num">—</span><span class="cdesc">All castles: 2<sup>w</sup> − 1, the skylines with every c<sub>i</sub> 1 or 2, less the flat one (1, …, 1).</span></div>
+            <div class="count"><i class="lampdot am" data-f="even-lamp"></i><span class="cname">A<sup>e</sup>(<span data-f="even-w"></span>, 2)</span><span class="num" data-f="even-num">—</span><span class="cdesc">Even-block castles, the castles Project Euler Problem 502 counts.</span></div>
+            <div class="count"><i class="lampdot am" data-f="odd-lamp"></i><span class="cname">A<sup>o</sup>(<span data-f="odd-w"></span>, 2)</span><span class="num" data-f="odd-num">—</span><span class="cdesc">Odd-block castles: A(w, 2) − A<sup>e</sup>(w, 2).</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="lab"><span>Catalog</span><span class="sub" id="cat-sub"></span></div>
+      <div class="catalog" id="catalog"></div>
+      <p class="legend" id="cat-legend">Every Fibonacci castle of width w, numbered by rank. Click one to draw it; the framed one is on the field.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PARITY TRACKER ============ -->
+<section class="bay" id="bay-tracker" role="tabpanel" aria-labelledby="tab-tracker" hidden>
+  <div class="bay-head"><span class="bay-no">BAY 002</span><h2 class="bay-title">Parity tracker</h2><span class="bay-sub">Fibonacci castles counted</span></div>
+  <div class="bay-body">
+    <div class="g2">
+      <div class="col">
+        <div class="mod">
+          <div class="lab"><span>Width w</span><span class="sub">1 – 100,000 columns</span></div>
+          <div class="dim-row">
+            <div class="rail-wrap" id="tw-rail" role="slider" tabindex="0" aria-label="Width w" aria-valuemin="1" aria-valuemax="100000">
+              <div class="rail"></div><div class="zones"></div><div class="ticks"></div><div class="thumb"></div>
+              <span class="endcap" style="left:0">1</span><span class="endcap" style="right:0">100k</span>
+            </div>
+            <div class="stepper"><span class="tag">w</span><button data-step="-1" aria-label="Decrease width">−</button><input id="tw-num" class="wide" type="number" min="1" max="100000" inputmode="numeric" aria-label="Width w" /><button data-step="1" aria-label="Increase width">+</button></div>
+          </div>
+          <p class="legend">The slider is logarithmic: each tick is 10 times the one before. Arrows step by 1, <kbd>PgUp</kbd> <kbd>PgDn</kbd> by 6.</p>
+          <div class="ctl-row">
+            <div class="ctl">
+              <span class="klab">Jump</span>
+              <div class="btn-row"><button class="btn" data-jump="-6">w − 6</button><button class="btn" data-jump="6">w + 6</button><button class="btn" data-jump="x10">w × 10</button></div>
+            </div>
+            <div class="ctl">
+              <span class="klab">Auto-step, widths per second</span>
+              <div class="seg" id="sweepSeg" role="group" aria-label="Auto-step rate"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mod">
+          <div class="lab"><span>Parity difference</span><span class="sub">S<sub>F</sub>(w) = A<sup>e</sup><sub>F</sub>(w) − A<sup>o</sup><sub>F</sub>(w)</span></div>
+          <div class="theory lead">How many more Fibonacci castles of width w have an even number of blocks than an odd number.</div>
+          <div class="hexwrap"><svg class="hex" id="hex" viewBox="0 0 320 320" role="img" aria-label="The period of S_F as a hexagon: one corner per leftover of w divided by 6, the corner of w lit"></svg></div>
+          <div class="hex-foot"><span class="pill" id="d-check">—</span></div>
+          <p class="legend">The corners run clockwise through the leftovers of w ÷ 6, from 0 at the top, each with the S<sub>F</sub> that PE502-2 Theorem 3 predicts. The amber light marks w; the center holds the exact S<sub>F</sub>(w).</p>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="mod">
+          <div class="lab"><span>Fibonacci castle counts</span><span class="sub" id="tc-sub"></span></div>
+          <div class="counts" id="t-counts"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mod">
+      <div class="lab"><span>S<sub>F</sub>(w), the last 36 widths</span><span class="sub" id="wave-sub"></span></div>
+      <div class="well"><canvas id="wave" class="cv-wave" aria-label="S_F over the last 36 widths"></canvas></div>
+      <p class="legend">Bars are the exact counts; thin marks are the values the period predicts. The highlighted bar is w.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span><kbd>1</kbd><kbd>2</kbd> pages · <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> field · <kbd>B</kbd> bricks · <kbd>X</kbd> exchange · <kbd>[</kbd><kbd>]</kbd> rank · <kbd>W</kbd> auto-step · <kbd>M</kbd> motion</span>
+  <span>Fibonacci Castles · REV. B</span>
+</footer>
+
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

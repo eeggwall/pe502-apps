@@ -7,6 +7,7 @@ castle polyominoes after Project Euler Problem 502.
 | App | Name | Companion to |
 |-----|------|--------------|
 | [`1/`](1/) | Castle Foundry | PE502-1, *Castle Polyominoes and How to Count Them* |
+| [`2/`](2/) | Fibonacci Castles | PE502-2, *Fibonacci Castles* |
 
 Each app lives in its own numbered directory and stands alone: plain HTML,
 CSS and ES modules, with no build step, no dependencies, and nothing loaded
